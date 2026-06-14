@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import Hero from '../components/Hero.astro';
 import PostCard from '../components/PostCard.astro';
+import ProfileCard from '../components/ProfileCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const allPosts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const recentPosts = allPosts.slice(0, 3);
+const recentPosts = allPosts.slice(0, 6);
 ---
 
 <!doctype html>
@@ -21,38 +21,49 @@ const recentPosts = allPosts.slice(0, 3);
 	<body>
 		<Header />
 		<main>
-			<Hero
-				name="leisj24"
-				tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
-			/>
-
-			<section class="recent-posts">
-				<header class="section-head">
-					<h2>最新文章</h2>
-					<a class="view-all" href="/blog">查看全部 →</a>
-				</header>
-				{
-					recentPosts.length === 0 ? (
-						<p class="empty">还没有文章，敬请期待。</p>
-					) : (
-						<div class="posts-grid">
-							{recentPosts.map((post) => (
-								<PostCard
-									href={`/blog/${post.id}/`}
-									title={post.data.title}
-									pubDate={post.data.pubDate}
-									description={post.data.description}
-								/>
-							))}
-						</div>
-					)
-				}
-			</section>
+			<div class="page-with-sidebar">
+				<article>
+					<header class="section-head">
+						<h2>最新文章</h2>
+						<a class="view-all" href="/blog">查看全部 →</a>
+					</header>
+					{
+						recentPosts.length === 0 ? (
+							<p class="empty">还没有文章，敬请期待。</p>
+						) : (
+							<div class="posts-grid">
+								{recentPosts.map((post) => (
+									<PostCard
+										href={`/blog/${post.id}/`}
+										title={post.data.title}
+										pubDate={post.data.pubDate}
+										description={post.data.description}
+									/>
+								))}
+							</div>
+						)
+					}
+				</article>
+				<ProfileCard
+					name="leisj24"
+					tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
+				/>
+			</div>
 		</main>
 		<Footer />
 		<style>
-			.recent-posts {
-				margin-top: 2rem;
+			main {
+				width: 1120px;
+			}
+			.page-with-sidebar {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) 280px;
+				gap: 2rem;
+				align-items: start;
+			}
+			.page-with-sidebar > :global(aside) {
+				position: sticky;
+				top: 5rem;
 			}
 			.section-head {
 				display: flex;
@@ -79,6 +90,24 @@ const recentPosts = allPosts.slice(0, 3);
 				color: var(--color-text-muted);
 				text-align: center;
 				padding: 2rem 0;
+			}
+
+			@media (max-width: 1023px) {
+				main {
+					width: 760px;
+				}
+				.page-with-sidebar {
+					display: flex;
+					flex-direction: column;
+					gap: 1.75rem;
+				}
+				.page-with-sidebar > :global(aside) {
+					position: static;
+					order: -1;
+					max-width: 480px;
+					width: 100%;
+					align-self: center;
+				}
 			}
 		</style>
 	</body>
