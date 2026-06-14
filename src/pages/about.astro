@@ -34,8 +34,25 @@ import Layout from '../layouts/BlogPost.astro';
 	<h2>📫 联系方式</h2>
 	<ul>
 		<li>GitHub：<a href="https://github.com/leisj24" target="_blank" rel="noopener">@leisj24</a></li>
-		<li>邮箱：暂未公开（之后补充）</li>
+		<li>
+			邮箱：<a
+				class="js-mail"
+				href="#"
+				data-u="sjlei24"
+				data-d="mail.ustc.edu.cn">sjlei24[at]mail.ustc.edu.cn</a>
+		</li>
 	</ul>
 
 	<p><em>欢迎一起交流与合作 🤝</em></p>
 </Layout>
+
+<script is:inline>
+	document.querySelectorAll('.js-mail').forEach((el) => {
+		el.addEventListener('click', (e) => {
+			e.preventDefault();
+			const u = el.dataset.u;
+			const d = el.dataset.d;
+			if (u && d) window.location.href = 'mailto:' + u + '@' + d;
+		});
+	});
+</script>

@@ -1,66 +1,136 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header>
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<a class="brand" href="/">{SITE_TITLE}</a>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href="/blog">博客</HeaderLink>
+			<HeaderLink href="/about">关于</HeaderLink>
 		</div>
-		<div class="social-links">
-			<a href="https://github.com/leisj24" target="_blank" rel="noopener">
-				<span class="sr-only">leisj24 on GitHub</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
+		<div class="actions">
+			<a class="github" href="https://github.com/leisj24" target="_blank" rel="noopener" aria-label="leisj24 on GitHub">
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="20" height="20">
+					<path
 						fill="currentColor"
 						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-					></path></svg
-				>
+					></path>
+				</svg>
 			</a>
+			<ThemeToggle />
 		</div>
 	</nav>
 </header>
+
 <style>
 	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: color-mix(in srgb, var(--color-surface) 75%, transparent);
+		backdrop-filter: saturate(180%) blur(12px);
+		-webkit-backdrop-filter: saturate(180%) blur(12px);
+		border-bottom: 1px solid var(--color-border);
 	}
 	nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 1rem;
+		max-width: 1080px;
+		margin: 0 auto;
+		padding: 0.65rem 1.25rem;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
+	.brand {
+		font-weight: 700;
+		font-size: 1.05rem;
+		color: var(--color-text);
 		text-decoration: none;
+		transition: color 160ms ease;
 	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
+	.brand:hover {
+		color: var(--color-accent);
 	}
-	.social-links,
-	.social-links a {
+	.internal-links {
 		display: flex;
+		align-items: center;
+		gap: 0.25rem;
 	}
+	.internal-links :global(a) {
+		position: relative;
+		padding: 0.5rem 0.9rem;
+		color: var(--color-text-muted);
+		font-size: 0.95rem;
+		font-weight: 500;
+		border-radius: var(--radius-pill);
+		transition: color 180ms ease, background 180ms ease;
+	}
+	.internal-links :global(a)::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		width: 0;
+		height: 3px;
+		background: var(--color-accent);
+		border-radius: var(--radius-pill);
+		transform: translateX(-50%);
+		transition: width 220ms ease;
+	}
+	.internal-links :global(a:hover) {
+		color: var(--color-text);
+	}
+	.internal-links :global(a:hover)::after {
+		width: 60%;
+	}
+	.internal-links :global(a.active) {
+		color: var(--color-accent);
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.internal-links :global(a.active)::after {
+		width: 60%;
+	}
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.github {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 38px;
+		height: 38px;
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-pill);
+		background: var(--color-surface);
+		transition:
+			color 200ms ease,
+			border-color 200ms ease;
+	}
+	.github:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent);
+	}
+
 	@media (max-width: 720px) {
-		.social-links {
+		nav {
+			padding: 0.5rem 0.75rem;
+		}
+		.brand {
+			font-size: 0.95rem;
+		}
+		.internal-links :global(a) {
+			padding: 0.45rem 0.6rem;
+			font-size: 0.9rem;
+		}
+		.github {
 			display: none;
 		}
 	}

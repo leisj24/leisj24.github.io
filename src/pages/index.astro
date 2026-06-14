@@ -1,8 +1,16 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import PostCard from '../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const recentPosts = allPosts.slice(0, 3);
 ---
 
 <!doctype html>
@@ -13,31 +21,65 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>👋 Hi，我是 leisj24</h1>
-			<p>
-				我是 <a href="https://www.ustc.edu.cn/" target="_blank" rel="noopener">中国科学技术大学（USTC）</a> 的一名本科生，
-				这里是我的个人主页，用来记录学习笔记、课程项目，以及一些对技术与世界的思考。
-			</p>
+			<Hero
+				name="leisj24"
+				tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
+			/>
 
-			<h2>📚 最近在做什么</h2>
-			<ul>
-				<li>学习计算机科学与相关数学课程</li>
-				<li>探索感兴趣的方向（算法 / 系统 / AI ……还在寻找）</li>
-				<li>把读书、上课、做项目的笔记慢慢搬到博客上</li>
-			</ul>
-
-			<h2>✍️ 最新博客</h2>
-			<p>
-				去 <a href="/blog">博客页面</a> 看全部文章，
-				或者去 <a href="/about">关于我</a> 了解更多。
-			</p>
-
-			<h2>📮 联系方式</h2>
-			<p>
-				欢迎通过 <a href="https://github.com/leisj24" target="_blank" rel="noopener">GitHub</a> 找到我，
-				一起交流学习与项目。
-			</p>
+			<section class="recent-posts">
+				<header class="section-head">
+					<h2>最新文章</h2>
+					<a class="view-all" href="/blog">查看全部 →</a>
+				</header>
+				{
+					recentPosts.length === 0 ? (
+						<p class="empty">还没有文章，敬请期待。</p>
+					) : (
+						<div class="posts-grid">
+							{recentPosts.map((post) => (
+								<PostCard
+									href={`/blog/${post.id}/`}
+									title={post.data.title}
+									pubDate={post.data.pubDate}
+									description={post.data.description}
+								/>
+							))}
+						</div>
+					)
+				}
+			</section>
 		</main>
 		<Footer />
+		<style>
+			.recent-posts {
+				margin-top: 2rem;
+			}
+			.section-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+				margin-bottom: 1.25rem;
+			}
+			.section-head h2 {
+				margin: 0;
+				font-size: 1.5rem;
+			}
+			.view-all {
+				font-size: 0.95rem;
+				color: var(--color-accent);
+				font-weight: 500;
+			}
+			.posts-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+				gap: 1.25rem;
+			}
+			.empty {
+				color: var(--color-text-muted);
+				text-align: center;
+				padding: 2rem 0;
+			}
+		</style>
 	</body>
 </html>

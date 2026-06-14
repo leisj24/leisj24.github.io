@@ -11,7 +11,7 @@ type Props = CollectionEntry<'blog'>['data'];
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
@@ -19,38 +19,44 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
+				padding-top: 2rem;
 			}
 			.hero-image {
 				width: 100%;
+				max-width: 1020px;
+				margin: 0 auto 1.5rem;
 			}
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border-radius: var(--radius-card);
+				box-shadow: var(--shadow-card);
 			}
 			.prose {
-				width: 720px;
+				width: 760px;
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
-				color: rgb(var(--gray-dark));
+				color: var(--color-text);
 			}
 			.title {
-				margin-bottom: 1em;
+				margin-bottom: 1.5em;
 				padding: 1em 0;
 				text-align: center;
-				line-height: 1;
+				line-height: 1.2;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				color: var(--color-text);
 			}
 			.date {
 				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+				color: var(--color-text-muted);
+				font-size: 0.95rem;
 			}
 			.last-updated-on {
 				font-style: italic;
+				color: var(--color-text-muted);
 			}
 		</style>
 	</head>
