@@ -36,7 +36,13 @@ const hasTOC = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 	</head>
 	<body>
 		<Header />
-		<Banner image={bannerImage} title={title} subtitle={description} height="medium" />
+		<Banner
+			transition:name="page-banner"
+			image={bannerImage}
+			title={title}
+			subtitle={description}
+			height="medium"
+		/>
 		<main class:list={[{ 'has-toc': hasTOC }]}>
 			<div class="article-with-toc">
 				<article>

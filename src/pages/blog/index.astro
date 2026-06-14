@@ -25,6 +25,7 @@ const posts = (await getCollection('blog'))
 	<body>
 		<Header />
 		<Banner
+			transition:name="page-banner"
 			title="博客"
 			subtitle={`共 ${posts.length} 篇文章 · 关于学习、技术与生活的随笔`}
 			height="medium"

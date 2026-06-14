@@ -144,14 +144,16 @@ const { name, tagline } = Astro.props;
 </style>
 
 <script is:inline>
-	document.querySelectorAll('.js-mail').forEach((el) => {
-		if (el.dataset.bound) return;
-		el.dataset.bound = '1';
-		el.addEventListener('click', (e) => {
-			e.preventDefault();
-			const u = el.dataset.u;
-			const d = el.dataset.d;
-			if (u && d) window.location.href = 'mailto:' + u + '@' + d;
+	document.addEventListener('astro:page-load', () => {
+		document.querySelectorAll('.js-mail').forEach((el) => {
+			if (el.dataset.bound) return;
+			el.dataset.bound = '1';
+			el.addEventListener('click', (e) => {
+				e.preventDefault();
+				const u = el.dataset.u;
+				const d = el.dataset.d;
+				if (u && d) window.location.href = 'mailto:' + u + '@' + d;
+			});
 		});
 	});
 </script>

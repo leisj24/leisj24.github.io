@@ -93,7 +93,12 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 </style>
 
 <script>
-	(() => {
+	let observer: IntersectionObserver | null = null;
+
+	function initTOC() {
+		observer?.disconnect();
+		observer = null;
+
 		const links = Array.from(
 			document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'),
 		);
@@ -115,7 +120,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 			});
 		};
 
-		const observer = new IntersectionObserver(
+		observer = new IntersectionObserver(
 			(entries) => {
 				const visible = entries
 					.filter((e) => e.isIntersecting)
@@ -130,10 +135,11 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 			},
 		);
 
-		targets.forEach(({ el }) => observer.observe(el));
+		targets.forEach(({ el }) => observer!.observe(el));
 
-		// Smooth scroll on click (with offset for sticky header)
 		links.forEach((link) => {
+			if (link.dataset.bound) return;
+			link.dataset.bound = '1';
 			link.addEventListener('click', (e) => {
 				const slug = link.dataset.tocLink;
 				if (!slug) return;
@@ -145,5 +151,11 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 				history.replaceState(null, '', `#${slug}`);
 			});
 		});
-	})();
+	}
+
+	document.addEventListener('astro:page-load', initTOC);
+	document.addEventListener('astro:before-swap', () => {
+		observer?.disconnect();
+		observer = null;
+	});
 </script>
