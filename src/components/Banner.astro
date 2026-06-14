@@ -1,0 +1,112 @@
+---
+interface Props {
+	image?: string;
+	title: string;
+	subtitle?: string;
+	height?: 'large' | 'medium' | 'small';
+}
+
+const {
+	image = '/banner.jpg',
+	title,
+	subtitle,
+	height = 'large',
+} = Astro.props;
+---
+
+<section class={`banner banner--${height}`}>
+	<div class="banner-img" style={`background-image: url(${image});`}></div>
+	<div class="banner-overlay"></div>
+	<div class="banner-content">
+		<h1 class="banner-title">{title}</h1>
+		{subtitle && <p class="banner-subtitle">{subtitle}</p>}
+	</div>
+	<div class="banner-fade"></div>
+</section>
+
+<style>
+	.banner {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		isolation: isolate;
+	}
+	.banner--large {
+		height: clamp(280px, 48vh, 460px);
+	}
+	.banner--medium {
+		height: clamp(220px, 36vh, 340px);
+	}
+	.banner--small {
+		height: clamp(160px, 26vh, 240px);
+	}
+	.banner-img {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		transform: scale(1.04);
+		transition: transform 8s ease-out;
+		z-index: -2;
+	}
+	.banner:hover .banner-img {
+		transform: scale(1.08);
+	}
+	.banner-overlay {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(
+				180deg,
+				color-mix(in srgb, var(--color-bg) 12%, transparent) 0%,
+				color-mix(in srgb, var(--color-bg) 4%, transparent) 50%,
+				color-mix(in srgb, var(--color-bg) 60%, transparent) 100%
+			),
+			linear-gradient(
+				135deg,
+				color-mix(in srgb, var(--color-accent) 30%, transparent),
+				transparent 55%
+			);
+		z-index: -1;
+	}
+	.banner-content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 2.5rem clamp(1rem, 6vw, 4rem) 3rem;
+		max-width: 1080px;
+		margin: 0 auto;
+		color: #fff;
+		text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+	}
+	.banner-title {
+		margin: 0 0 0.35rem;
+		font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+		font-weight: 800;
+		letter-spacing: -0.01em;
+		line-height: 1.2;
+		color: #fff;
+	}
+	.banner-subtitle {
+		margin: 0;
+		font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+		opacity: 0.95;
+		max-width: 640px;
+		line-height: 1.6;
+	}
+	.banner-fade {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		height: 60px;
+		background: linear-gradient(
+			180deg,
+			transparent,
+			var(--color-bg) 95%
+		);
+		pointer-events: none;
+	}
+</style>

@@ -2,6 +2,7 @@
 title: '用 Astro 从零搭建这个个人主页'
 description: '记录一下我用 Astro + GitHub Pages 把这个站点搭起来的过程：技术选型、视觉重构、踩过的几个坑。'
 pubDate: '2026-06-14'
+tags: ['Astro', '建站', 'GitHub Pages']
 ---
 
 把这个主页搭起来花了大半天，过程里踩了不少小坑。趁记忆还新写下来，给以后想搭类似站点的同学一份参考。
@@ -76,7 +77,7 @@ npm create astro@latest -- --template blog --typescript strict
 
 `git push` 报：
 
-```
+```text
 refusing to allow an OAuth App to create or update workflow
 .github/workflows/deploy.yml without `workflow` scope
 ```

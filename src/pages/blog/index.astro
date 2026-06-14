@@ -1,15 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
+import Banner from '../../components/Banner.astro';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import PostCard from '../../components/PostCard.astro';
 import ProfileCard from '../../components/ProfileCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { calcReadingStats } from '../../utils/reading-time';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.map((post) => ({
+		post,
+		stats: calcReadingStats(post.body ?? ''),
+	}));
 ---
 
 <!doctype html>
@@ -19,61 +24,55 @@ const posts = (await getCollection('blog')).sort(
 	</head>
 	<body>
 		<Header />
+		<Banner
+			title="博客"
+			subtitle={`共 ${posts.length} 篇文章 · 关于学习、技术与生活的随笔`}
+			height="medium"
+		/>
 		<main>
 			<div class="page-with-sidebar">
+				<ProfileCard
+					name="leisj24"
+					tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
+				/>
 				<article>
-					<header class="page-head">
-						<h1>博客</h1>
-						<p>共 {posts.length} 篇文章。</p>
-					</header>
 					{
 						posts.length === 0 ? (
 							<p class="empty">还没有文章，敬请期待。</p>
 						) : (
 							<div class="posts-grid">
-								{posts.map((post) => (
+								{posts.map(({ post, stats }) => (
 									<PostCard
 										href={`/blog/${post.id}/`}
 										title={post.data.title}
 										pubDate={post.data.pubDate}
 										description={post.data.description}
+										tags={post.data.tags}
+										words={stats.words}
+										minutes={stats.minutes}
 									/>
 								))}
 							</div>
 						)
 					}
 				</article>
-				<ProfileCard
-					name="leisj24"
-					tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
-				/>
 			</div>
 		</main>
 		<Footer />
 		<style>
 			main {
 				width: 1120px;
+				padding-top: 2rem;
 			}
 			.page-with-sidebar {
 				display: grid;
-				grid-template-columns: minmax(0, 1fr) 280px;
+				grid-template-columns: 280px minmax(0, 1fr);
 				gap: 2rem;
 				align-items: start;
 			}
 			.page-with-sidebar > :global(aside) {
 				position: sticky;
 				top: 5rem;
-			}
-			.page-head {
-				margin-bottom: 1.5rem;
-			}
-			.page-head h1 {
-				margin: 0 0 0.25rem;
-				font-size: 2.1rem;
-			}
-			.page-head p {
-				margin: 0;
-				color: var(--color-text-muted);
 			}
 			.posts-grid {
 				display: grid;
@@ -89,6 +88,7 @@ const posts = (await getCollection('blog')).sort(
 			@media (max-width: 1023px) {
 				main {
 					width: 760px;
+					padding-top: 1.5rem;
 				}
 				.page-with-sidebar {
 					display: flex;
@@ -97,7 +97,6 @@ const posts = (await getCollection('blog')).sort(
 				}
 				.page-with-sidebar > :global(aside) {
 					position: static;
-					order: -1;
 					max-width: 480px;
 					width: 100%;
 					align-self: center;

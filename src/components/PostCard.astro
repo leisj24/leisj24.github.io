@@ -1,36 +1,76 @@
 ---
 import FormattedDate from './FormattedDate.astro';
+import { formatWordCount } from '../utils/reading-time';
 
 interface Props {
 	href: string;
 	title: string;
 	pubDate: Date;
 	description?: string;
+	tags?: string[];
+	words?: number;
+	minutes?: number;
 }
 
-const { href, title, pubDate, description } = Astro.props;
+const { href, title, pubDate, description, tags, words, minutes } = Astro.props;
 ---
 
 <a class="card" href={href}>
 	<h3 class="title">{title}</h3>
-	<p class="meta">
-		<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
-			<path
-				fill="currentColor"
-				d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 16H5V10h14v10Zm0-12H5V6h14v2Z"
-			></path>
-		</svg>
-		<FormattedDate date={pubDate} />
-	</p>
+	<div class="meta">
+		<span class="meta-item">
+			<svg viewBox="0 0 24 24" aria-hidden="true" width="13" height="13">
+				<path
+					fill="currentColor"
+					d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 16H5V10h14v10Zm0-12H5V6h14v2Z"
+				></path>
+			</svg>
+			<FormattedDate date={pubDate} />
+		</span>
+		{
+			words !== undefined && (
+				<span class="meta-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true" width="13" height="13">
+						<path
+							fill="currentColor"
+							d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"
+						/>
+					</svg>
+					{formatWordCount(words)}
+				</span>
+			)
+		}
+		{
+			minutes !== undefined && (
+				<span class="meta-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true" width="13" height="13">
+						<path
+							fill="currentColor"
+							d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Zm.5-13H11v6l5.2 3.1.8-1.3-4.5-2.7Z"
+						/>
+					</svg>
+					{minutes} 分钟
+				</span>
+			)
+		}
+	</div>
 	{description && <p class="excerpt">{description}</p>}
-	<span class="read-more">阅读 →</span>
+	{
+		tags && tags.length > 0 && (
+			<div class="tags">
+				{tags.map((tag) => (
+					<span class="tag">{tag}</span>
+				))}
+			</div>
+		)
+	}
 </a>
 
 <style>
 	.card {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.55rem;
 		padding: 1.4rem 1.5rem 1.25rem;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
@@ -53,7 +93,7 @@ const { href, title, pubDate, description } = Astro.props;
 		margin: 0;
 		font-size: 1.2rem;
 		font-weight: 700;
-		line-height: 1.35;
+		line-height: 1.4;
 		color: var(--color-text);
 		transition: color 200ms ease;
 	}
@@ -61,15 +101,19 @@ const { href, title, pubDate, description } = Astro.props;
 		color: var(--color-accent);
 	}
 	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 0.85rem;
+		color: var(--color-text-muted);
+		font-size: 0.82rem;
+	}
+	.meta-item {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4rem;
-		margin: 0;
-		color: var(--color-text-muted);
-		font-size: 0.85rem;
+		gap: 0.3rem;
 	}
 	.excerpt {
-		margin: 0.25rem 0 0;
+		margin: 0.1rem 0 0;
 		color: var(--color-text-muted);
 		font-size: 0.95rem;
 		line-height: 1.6;
@@ -78,20 +122,24 @@ const { href, title, pubDate, description } = Astro.props;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
-	.read-more {
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
 		margin-top: auto;
 		padding-top: 0.5rem;
-		color: var(--color-accent);
-		font-size: 0.9rem;
-		font-weight: 500;
-		opacity: 0;
-		transform: translateX(-4px);
-		transition:
-			opacity 240ms ease,
-			transform 240ms ease;
 	}
-	.card:hover .read-more {
-		opacity: 1;
-		transform: translateX(0);
+	.tag {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.15rem 0.6rem;
+		background: color-mix(in srgb, var(--color-accent-soft) 30%, transparent);
+		color: var(--color-accent);
+		border-radius: var(--radius-pill);
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+	.card:hover .tag {
+		background: color-mix(in srgb, var(--color-accent-soft) 50%, transparent);
 	}
 </style>
