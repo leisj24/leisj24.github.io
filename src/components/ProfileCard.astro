@@ -1,22 +1,23 @@
 ---
-interface Props {
-	name: string;
-	tagline: string;
-}
-
-const { name, tagline } = Astro.props;
+import {
+	AUTHOR_NAME,
+	AUTHOR_TAGLINE,
+	EMAIL_DOMAIN,
+	EMAIL_USER,
+	GITHUB_URL,
+} from '../consts';
 ---
 
 <aside class="profile-card">
 	<div class="avatar-wrap">
-		<img src="/avatar.png" alt={name} width="96" height="96" loading="eager" />
+		<img src="/avatar.png" alt={AUTHOR_NAME} width="96" height="96" loading="eager" />
 	</div>
-	<h3 class="name">{name}</h3>
-	<p class="tagline">{tagline}</p>
+	<h3 class="name">{AUTHOR_NAME}</h3>
+	<p class="tagline">{AUTHOR_TAGLINE}</p>
 	<div class="socials">
 		<a
 			class="pill"
-			href="https://github.com/leisj24"
+			href={GITHUB_URL}
 			target="_blank"
 			rel="noopener"
 			aria-label="GitHub"
@@ -32,8 +33,8 @@ const { name, tagline } = Astro.props;
 		<a
 			class="pill js-mail"
 			href="#"
-			data-u="sjlei24"
-			data-d="mail.ustc.edu.cn"
+			data-u={EMAIL_USER}
+			data-d={EMAIL_DOMAIN}
 			aria-label="Email"
 		>
 			<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">

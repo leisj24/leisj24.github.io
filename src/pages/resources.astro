@@ -1,0 +1,226 @@
+---
+import SidebarLayout from '../layouts/SidebarLayout.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const resourceGroups = [
+	{
+		title: '计算机基础',
+		description: '用于搭建 CS 学习框架的课程、书籍与路线图。',
+		items: [
+			{
+				title: 'CS 自学指南',
+				href: 'https://csdiy.wiki/',
+				description: '系统整理计算机课程与公开课资源，适合作为长期路线图。',
+				tags: ['路线', '公开课'],
+			},
+			{
+				title: 'Teach Yourself CS',
+				href: 'https://teachyourselfcs.com/',
+				description: '按学科梳理计算机基础阅读材料，偏经典教材导向。',
+				tags: ['教材', '英文'],
+			},
+			{
+				title: 'MIT Missing Semester',
+				href: 'https://missing.csail.mit.edu/',
+				description: 'Shell、Git、调试、编辑器等工程工具课。',
+				tags: ['工具', '课程'],
+			},
+		],
+	},
+	{
+		title: '算法与竞赛',
+		description: '算法、数据结构、题单与竞赛训练资料。',
+		items: [
+			{
+				title: 'OI Wiki',
+				href: 'https://oi-wiki.org/',
+				description: '算法竞赛知识库，覆盖数据结构、图论、数学等主题。',
+				tags: ['算法', '中文'],
+			},
+			{
+				title: 'CP-Algorithms',
+				href: 'https://cp-algorithms.com/',
+				description: '竞赛算法英文资料，讲解和实现都比较完整。',
+				tags: ['算法', '英文'],
+			},
+			{
+				title: 'USACO Guide',
+				href: 'https://usaco.guide/',
+				description: '按难度组织的算法训练路径，适合循序渐进刷题。',
+				tags: ['题单', '训练'],
+			},
+		],
+	},
+	{
+		title: '数学与理论',
+		description: '数学基础、离散结构和理论计算机科学相关资料。',
+		items: [
+			{
+				title: '3Blue1Brown',
+				href: 'https://www.3blue1brown.com/',
+				description: '用可视化方式理解线代、微积分、概率等主题。',
+				tags: ['数学', '可视化'],
+			},
+			{
+				title: 'Mathematics for Computer Science',
+				href: 'https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/',
+				description: 'MIT 离散数学课程，覆盖证明、图、概率和数论。',
+				tags: ['离散数学', 'OCW'],
+			},
+		],
+	},
+	{
+		title: '工程实践',
+		description: '写代码、读文档、做项目时经常需要查阅的材料。',
+		items: [
+			{
+				title: 'MDN Web Docs',
+				href: 'https://developer.mozilla.org/',
+				description: 'Web 标准与前端技术文档，查 HTML/CSS/JS 很方便。',
+				tags: ['Web', '文档'],
+			},
+			{
+				title: 'The Architecture of Open Source Applications',
+				href: 'https://aosabook.org/en/',
+				description: '通过真实开源项目学习软件架构与工程设计。',
+				tags: ['架构', '阅读'],
+			},
+		],
+	},
+];
+---
+
+<SidebarLayout
+	title={`资料 · ${SITE_TITLE}`}
+	description={SITE_DESCRIPTION}
+	bannerTitle="学习资料"
+	bannerSubtitle="收集课程、文档、题单与工具资料，方便日常学习时快速回访。"
+	bannerHeight="medium"
+>
+	<article class="resources">
+		{
+			resourceGroups.map((group) => (
+				<section class="resource-group">
+					<header class="group-head">
+						<h2>{group.title}</h2>
+						<p>{group.description}</p>
+					</header>
+					<div class="resource-list">
+						{group.items.map((item) => (
+							<a class="resource-item" href={item.href} target="_blank" rel="noopener">
+								<div class="resource-main">
+									<h3>{item.title}</h3>
+									<p>{item.description}</p>
+								</div>
+								<div class="resource-tags" aria-label="资源标签">
+									{item.tags.map((tag) => (
+										<span>{tag}</span>
+									))}
+								</div>
+							</a>
+						))}
+					</div>
+				</section>
+			))
+		}
+	</article>
+	<style>
+			.resources {
+				display: flex;
+				flex-direction: column;
+				gap: 2rem;
+			}
+			.resource-group {
+				padding: 1.5rem 1.6rem;
+				background: var(--color-surface);
+				border: 1px solid var(--color-border);
+				border-radius: var(--radius-card);
+				box-shadow: var(--shadow-card);
+			}
+			.group-head {
+				margin-bottom: 1rem;
+				padding-bottom: 1rem;
+				border-bottom: 1px solid var(--color-border);
+			}
+			.group-head h2 {
+				margin: 0 0 0.35rem;
+				font-size: 1.35rem;
+			}
+			.group-head p {
+				margin: 0;
+				color: var(--color-text-muted);
+				font-size: 0.95rem;
+				line-height: 1.6;
+			}
+			.resource-list {
+				display: flex;
+				flex-direction: column;
+			}
+			.resource-item {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 1rem;
+				align-items: center;
+				padding: 0.95rem 0;
+				color: var(--color-text);
+				text-decoration: none;
+				border-bottom: 1px solid var(--color-border);
+				transition:
+					color 180ms ease,
+					transform 180ms ease;
+			}
+			.resource-item:last-child {
+				border-bottom: 0;
+				padding-bottom: 0;
+			}
+			.resource-item:first-child {
+				padding-top: 0;
+			}
+			.resource-item:hover {
+				color: var(--color-accent);
+				transform: translateX(3px);
+			}
+			.resource-main h3 {
+				margin: 0 0 0.25rem;
+				font-size: 1.05rem;
+				line-height: 1.4;
+			}
+			.resource-main p {
+				margin: 0;
+				color: var(--color-text-muted);
+				font-size: 0.9rem;
+				line-height: 1.55;
+			}
+			.resource-tags {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+				gap: 0.35rem;
+				min-width: 120px;
+			}
+			.resource-tags span {
+				display: inline-flex;
+				align-items: center;
+				padding: 0.15rem 0.6rem;
+				background: color-mix(in srgb, var(--color-accent-soft) 30%, transparent);
+				color: var(--color-accent);
+				border-radius: var(--radius-pill);
+				font-size: 0.75rem;
+				font-weight: 500;
+			}
+
+			@media (max-width: 720px) {
+				.resource-group {
+					padding: 1.25rem 1rem;
+				}
+				.resource-item {
+					grid-template-columns: 1fr;
+					gap: 0.65rem;
+				}
+				.resource-tags {
+					justify-content: flex-start;
+					min-width: 0;
+				}
+			}
+	</style>
+</SidebarLayout>

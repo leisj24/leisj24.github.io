@@ -1,11 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import Banner from '../../components/Banner.astro';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
 import PostCard from '../../components/PostCard.astro';
-import ProfileCard from '../../components/ProfileCard.astro';
+import SidebarLayout from '../../layouts/SidebarLayout.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import { calcReadingStats } from '../../utils/reading-time';
 
@@ -17,92 +13,44 @@ const posts = (await getCollection('blog'))
 	}));
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={`博客 · ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<Banner
-			transition:name="page-banner"
-			title="博客"
-			subtitle={`共 ${posts.length} 篇文章 · 关于学习、技术与生活的随笔`}
-			height="medium"
-		/>
-		<main>
-			<div class="page-with-sidebar">
-				<ProfileCard
-					name="leisj24"
-					tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
-				/>
-				<article>
-					{
-						posts.length === 0 ? (
-							<p class="empty">还没有文章，敬请期待。</p>
-						) : (
-							<div class="posts-grid">
-								{posts.map(({ post, stats }) => (
-									<PostCard
-										href={`/blog/${post.id}/`}
-										title={post.data.title}
-										pubDate={post.data.pubDate}
-										description={post.data.description}
-										tags={post.data.tags}
-										words={stats.words}
-										minutes={stats.minutes}
-									/>
-								))}
-							</div>
-						)
-					}
-				</article>
-			</div>
-		</main>
-		<Footer />
-		<style>
-			main {
-				width: 1120px;
-				padding-top: 2rem;
-			}
-			.page-with-sidebar {
-				display: grid;
-				grid-template-columns: 280px minmax(0, 1fr);
-				gap: 2rem;
-				align-items: start;
-			}
-			.page-with-sidebar > :global(aside) {
-				position: sticky;
-				top: 5rem;
-			}
-			.posts-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-				gap: 1.25rem;
-			}
-			.empty {
-				color: var(--color-text-muted);
-				text-align: center;
-				padding: 3rem 0;
-			}
-
-			@media (max-width: 1023px) {
-				main {
-					width: 760px;
-					padding-top: 1.5rem;
-				}
-				.page-with-sidebar {
-					display: flex;
-					flex-direction: column;
-					gap: 1.75rem;
-				}
-				.page-with-sidebar > :global(aside) {
-					position: static;
-					max-width: 480px;
-					width: 100%;
-					align-self: center;
-				}
-			}
-		</style>
-	</body>
-</html>
+<SidebarLayout
+	title={`博客 · ${SITE_TITLE}`}
+	description={SITE_DESCRIPTION}
+	bannerTitle="博客"
+	bannerSubtitle={`共 ${posts.length} 篇文章 · 关于学习、技术与生活的随笔`}
+	bannerHeight="medium"
+>
+	<article>
+		{
+			posts.length === 0 ? (
+				<p class="empty">还没有文章，敬请期待。</p>
+			) : (
+				<div class="posts-grid">
+					{posts.map(({ post, stats }) => (
+						<PostCard
+							href={`/blog/${post.id}/`}
+							title={post.data.title}
+							pubDate={post.data.pubDate}
+							description={post.data.description}
+							tags={post.data.tags}
+							words={stats.words}
+							minutes={stats.minutes}
+						/>
+					))}
+				</div>
+			)
+		}
+	</article>
+	<style>
+		.posts-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 1.25rem;
+		}
+		.empty {
+			color: var(--color-text-muted);
+			text-align: center;
+			padding: 3rem 0;
+		}
+	</style>
+</SidebarLayout>

@@ -1,12 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import Banner from '../components/Banner.astro';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import PostCard from '../components/PostCard.astro';
-import ProfileCard from '../components/ProfileCard.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import SidebarLayout from '../layouts/SidebarLayout.astro';
+import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { calcReadingStats } from '../utils/reading-time';
 
 const allPosts = (await getCollection('blog')).sort(
@@ -16,113 +12,135 @@ const recentPosts = allPosts.slice(0, 6).map((post) => ({
 	post,
 	stats: calcReadingStats(post.body ?? ''),
 }));
+
+const intro =
+	'中国科学技术大学（USTC）本科在读。这里汇总我的学习轨迹、技术思考，以及一些零散的想法。';
+const skills = [
+	'算法竞赛',
+	'系统编程',
+	'人工智能',
+	'数据结构与算法',
+	'操作系统',
+	'计算机网络',
+	'数学基础',
+];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<Banner
-			transition:name="page-banner"
-			title="leisj24's Homepage"
-			subtitle="USTC 本科生 · 学习轨迹与技术思考"
-		/>
-		<main>
-			<div class="page-with-sidebar">
-				<ProfileCard
-					name="leisj24"
-					tagline="USTC 本科生 · 这里是我的学习轨迹与技术思考。"
-				/>
-				<article>
-					<header class="section-head">
-						<h2>最新文章</h2>
-						<a class="view-all" href="/blog">查看全部 →</a>
-					</header>
-					{
-						recentPosts.length === 0 ? (
-							<p class="empty">还没有文章，敬请期待。</p>
-						) : (
-							<div class="posts-grid">
-								{recentPosts.map(({ post, stats }) => (
-									<PostCard
-										href={`/blog/${post.id}/`}
-										title={post.data.title}
-										pubDate={post.data.pubDate}
-										description={post.data.description}
-										tags={post.data.tags}
-										words={stats.words}
-										minutes={stats.minutes}
-									/>
-								))}
-							</div>
-						)
-					}
-				</article>
-			</div>
-		</main>
-		<Footer />
-		<style>
-			main {
-				width: 1120px;
-				padding-top: 2rem;
-			}
-			.page-with-sidebar {
-				display: grid;
-				grid-template-columns: 280px minmax(0, 1fr);
-				gap: 2rem;
-				align-items: start;
-			}
-			.page-with-sidebar > :global(aside) {
-				position: sticky;
-				top: 5rem;
-			}
-			.section-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1rem;
-				margin-bottom: 1.25rem;
-			}
-			.section-head h2 {
-				margin: 0;
-				font-size: 1.5rem;
-			}
-			.view-all {
-				font-size: 0.95rem;
-				color: var(--color-accent);
-				font-weight: 500;
-			}
-			.posts-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-				gap: 1.25rem;
-			}
-			.empty {
-				color: var(--color-text-muted);
-				text-align: center;
-				padding: 2rem 0;
-			}
-
-			@media (max-width: 1023px) {
-				main {
-					width: 760px;
-					padding-top: 1.5rem;
-				}
-				.page-with-sidebar {
-					display: flex;
-					flex-direction: column;
-					gap: 1.75rem;
-				}
-				.page-with-sidebar > :global(aside) {
-					position: static;
-					max-width: 480px;
-					width: 100%;
-					align-self: center;
-				}
-			}
-		</style>
-	</body>
-</html>
+<SidebarLayout
+	title={SITE_TITLE}
+	description={SITE_DESCRIPTION}
+	bannerTitle="leisj24's Homepage"
+	bannerSubtitle="USTC 本科生 · 学习轨迹与技术思考"
+>
+	<section class="intro">
+		<p class="greeting">你好，我是 <strong>{AUTHOR_NAME}</strong> 👋</p>
+		<p class="intro-text">{intro}</p>
+		<ul class="skill-tags" aria-label="关注方向">
+			{skills.map((skill) => <li>{skill}</li>)}
+		</ul>
+	</section>
+	<article>
+		<header class="section-head">
+			<h2>最新文章</h2>
+			<a class="view-all" href="/blog">查看全部 →</a>
+		</header>
+		{
+			recentPosts.length === 0 ? (
+				<p class="empty">还没有文章，先去写点东西吧。</p>
+			) : (
+				<div class="posts-grid">
+					{recentPosts.map(({ post, stats }) => (
+						<PostCard
+							href={`/blog/${post.id}/`}
+							title={post.data.title}
+							pubDate={post.data.pubDate}
+							description={post.data.description}
+							tags={post.data.tags}
+							words={stats.words}
+							minutes={stats.minutes}
+						/>
+					))}
+				</div>
+			)
+		}
+	</article>
+	<style>
+		.intro {
+			position: relative;
+			padding: 1.6rem 1.75rem;
+			margin-bottom: 2rem;
+			background: var(--color-surface);
+			border: 1px solid var(--color-border);
+			border-radius: var(--radius-card);
+			box-shadow: var(--shadow-card);
+			overflow: hidden;
+		}
+		.intro::before {
+			content: '';
+			position: absolute;
+			inset: 0 auto 0 0;
+			width: 4px;
+			background: linear-gradient(
+				180deg,
+				var(--color-accent),
+				var(--color-accent-hover)
+			);
+		}
+		.greeting {
+			margin: 0 0 0.4rem;
+			font-size: 1.35rem;
+			font-weight: 700;
+			letter-spacing: -0.01em;
+		}
+		.intro-text {
+			margin: 0 0 1.1rem;
+			color: var(--color-text-muted);
+			font-size: 0.98rem;
+			line-height: 1.7;
+		}
+		.skill-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.45rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		.skill-tags li {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.25rem 0.75rem;
+			background: color-mix(in srgb, var(--color-accent-soft) 30%, transparent);
+			color: var(--color-accent);
+			border-radius: var(--radius-pill);
+			font-size: 0.82rem;
+			font-weight: 500;
+		}
+		.section-head {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1.25rem;
+		}
+		.section-head h2 {
+			margin: 0;
+			font-size: 1.5rem;
+		}
+		.view-all {
+			font-size: 0.95rem;
+			color: var(--color-accent);
+			font-weight: 500;
+		}
+		.posts-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+			gap: 1.25rem;
+		}
+		.empty {
+			color: var(--color-text-muted);
+			text-align: center;
+			padding: 2rem 0;
+		}
+	</style>
+</SidebarLayout>

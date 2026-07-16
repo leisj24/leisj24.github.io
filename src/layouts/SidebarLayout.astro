@@ -1,0 +1,80 @@
+---
+import Banner from '../components/Banner.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ProfileCard from '../components/ProfileCard.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	bannerTitle: string;
+	bannerSubtitle?: string;
+	bannerHeight?: 'large' | 'medium' | 'small';
+}
+
+const {
+	title,
+	description,
+	bannerTitle,
+	bannerSubtitle,
+	bannerHeight = 'large',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<Banner
+			transition:name="page-banner"
+			title={bannerTitle}
+			subtitle={bannerSubtitle}
+			height={bannerHeight}
+		/>
+		<main>
+			<div class="page-with-sidebar">
+				<ProfileCard />
+				<slot />
+			</div>
+		</main>
+		<Footer />
+		<style>
+			main {
+				width: 1120px;
+				padding-top: 2rem;
+			}
+			.page-with-sidebar {
+				display: grid;
+				grid-template-columns: 280px minmax(0, 1fr);
+				gap: 2rem;
+				align-items: start;
+			}
+			.page-with-sidebar > :global(aside) {
+				position: sticky;
+				top: 5rem;
+			}
+
+			@media (max-width: 1023px) {
+				main {
+					width: 760px;
+					padding-top: 1.5rem;
+				}
+				.page-with-sidebar {
+					display: flex;
+					flex-direction: column;
+					gap: 1.75rem;
+				}
+				.page-with-sidebar > :global(aside) {
+					position: static;
+					max-width: 480px;
+					width: 100%;
+					align-self: center;
+				}
+			}
+		</style>
+	</body>
+</html>

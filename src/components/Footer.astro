@@ -1,10 +1,12 @@
 ---
+import { AUTHOR_NAME } from '../consts';
+
 const today = new Date();
 ---
 
 <footer>
 	<div class="inner">
-		<span>&copy; {today.getFullYear()} leisj24</span>
+		<span>&copy; {today.getFullYear()} {AUTHOR_NAME}</span>
 		<span class="dot">·</span>
 		<span>
 			Built with

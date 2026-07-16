@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { AUTHOR_NAME, GITHUB_URL, SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import ThemeToggle from './ThemeToggle.astro';
 ---
@@ -7,13 +7,14 @@ import ThemeToggle from './ThemeToggle.astro';
 <header>
 	<nav>
 		<a class="brand" href="/">{SITE_TITLE}</a>
-		<div class="internal-links">
+		<div class="internal-links" id="primary-nav">
 			<HeaderLink href="/">首页</HeaderLink>
 			<HeaderLink href="/blog">博客</HeaderLink>
+			<HeaderLink href="/resources">资料</HeaderLink>
 			<HeaderLink href="/about">关于</HeaderLink>
 		</div>
 		<div class="actions">
-			<a class="github" href="https://github.com/leisj24" target="_blank" rel="noopener" aria-label="leisj24 on GitHub">
+			<a class="github" href={GITHUB_URL} target="_blank" rel="noopener" aria-label={`${AUTHOR_NAME} on GitHub`}>
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="20" height="20">
 					<path
 						fill="currentColor"
@@ -22,6 +23,17 @@ import ThemeToggle from './ThemeToggle.astro';
 				</svg>
 			</a>
 			<ThemeToggle />
+			<button
+				class="nav-toggle"
+				type="button"
+				aria-label="打开菜单"
+				aria-controls="primary-nav"
+				aria-expanded="false"
+			>
+				<span class="bar"></span>
+				<span class="bar"></span>
+				<span class="bar"></span>
+			</button>
 		</div>
 	</nav>
 </header>
@@ -37,6 +49,7 @@ import ThemeToggle from './ThemeToggle.astro';
 		border-bottom: 1px solid var(--color-border);
 	}
 	nav {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -118,6 +131,54 @@ import ThemeToggle from './ThemeToggle.astro';
 		color: var(--color-accent);
 		border-color: var(--color-accent);
 	}
+	.nav-toggle {
+		display: none;
+		position: relative;
+		width: 38px;
+		height: 38px;
+		align-items: center;
+		justify-content: center;
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-pill);
+		background: var(--color-surface);
+		cursor: pointer;
+		transition:
+			color 200ms ease,
+			border-color 200ms ease;
+	}
+	.nav-toggle:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent);
+	}
+	.nav-toggle .bar {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 18px;
+		height: 2px;
+		margin-left: -9px;
+		background: currentColor;
+		border-radius: 2px;
+		transition:
+			transform 220ms ease,
+			opacity 160ms ease;
+	}
+	.nav-toggle .bar:nth-child(1) {
+		transform: translateY(-5px);
+	}
+	.nav-toggle .bar:nth-child(3) {
+		transform: translateY(5px);
+	}
+	nav[data-open='true'] .nav-toggle .bar:nth-child(1) {
+		transform: rotate(45deg);
+	}
+	nav[data-open='true'] .nav-toggle .bar:nth-child(2) {
+		opacity: 0;
+	}
+	nav[data-open='true'] .nav-toggle .bar:nth-child(3) {
+		transform: rotate(-45deg);
+	}
 
 	@media (max-width: 720px) {
 		nav {
@@ -126,12 +187,102 @@ import ThemeToggle from './ThemeToggle.astro';
 		.brand {
 			font-size: 0.95rem;
 		}
-		.internal-links :global(a) {
-			padding: 0.45rem 0.6rem;
-			font-size: 0.9rem;
-		}
 		.github {
 			display: none;
 		}
+		.nav-toggle {
+			display: inline-flex;
+		}
+		.internal-links {
+			position: absolute;
+			top: calc(100% + 0.4rem);
+			left: 0.75rem;
+			right: 0.75rem;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.15rem;
+			padding: 0.5rem;
+			background: var(--color-surface);
+			border: 1px solid var(--color-border);
+			border-radius: var(--radius-card);
+			box-shadow: var(--shadow-card-hover);
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(-8px);
+			transition:
+				opacity 180ms ease,
+				transform 180ms ease,
+				visibility 180ms ease;
+		}
+		nav[data-open='true'] .internal-links {
+			opacity: 1;
+			visibility: visible;
+			transform: translateY(0);
+		}
+		.internal-links :global(a) {
+			padding: 0.65rem 0.8rem;
+			font-size: 0.98rem;
+			border-radius: var(--radius-sm);
+		}
+		.internal-links :global(a)::after {
+			display: none;
+		}
+		.internal-links :global(a:hover),
+		.internal-links :global(a.active) {
+			background: color-mix(in srgb, var(--color-accent-soft) 25%, transparent);
+		}
 	}
 </style>
+
+<script is:inline>
+	document.addEventListener('astro:page-load', () => {
+		const nav = document.querySelector('header nav');
+		const btn = nav && nav.querySelector('.nav-toggle');
+		if (nav && btn && !btn.dataset.bound) {
+			btn.dataset.bound = '1';
+			const setOpen = (open) => {
+				nav.dataset.open = open ? 'true' : 'false';
+				btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+				btn.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+			};
+			btn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				setOpen(nav.dataset.open !== 'true');
+			});
+			nav.querySelectorAll('.internal-links a').forEach((a) =>
+				a.addEventListener('click', () => setOpen(false)),
+			);
+		}
+
+		if (!document.documentElement.dataset.navGlobal) {
+			document.documentElement.dataset.navGlobal = '1';
+			const closeNav = () => {
+				const n = document.querySelector('header nav');
+				if (!n || n.dataset.open !== 'true') return null;
+				n.dataset.open = 'false';
+				const b = n.querySelector('.nav-toggle');
+				if (b) {
+					b.setAttribute('aria-expanded', 'false');
+					b.setAttribute('aria-label', '打开菜单');
+				}
+				return b;
+			};
+			document.addEventListener('click', (e) => {
+				const n = document.querySelector('header nav');
+				if (n && n.dataset.open === 'true' && !n.contains(e.target)) closeNav();
+			});
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					const b = closeNav();
+					if (b) b.focus();
+				}
+			});
+			window.addEventListener('resize', () => {
+				if (window.innerWidth > 720) {
+					const n = document.querySelector('header nav');
+					if (n) n.dataset.open = 'false';
+				}
+			});
+		}
+	});
+</script>
