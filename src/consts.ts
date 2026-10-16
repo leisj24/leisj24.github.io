@@ -3,7 +3,7 @@ export const SITE_DESCRIPTION = '中国科学技术大学（USTC）本科生 lei
 
 // 站点作者信息，供各组件/页面统一引用
 export const AUTHOR_NAME = 'leisj24';
-export const AUTHOR_TAGLINE = 'USTC 本科生 · 这里是我的学习轨迹与技术思考。';
+export const AUTHOR_TAGLINE = 'USTC 本科生 · 学习轨迹与技术思考';
 export const GITHUB_URL = 'https://github.com/leisj24';
 // 邮箱拆分为用户名与域名，客户端点击时再拼接，避免被爬虫抓取
 export const EMAIL_USER = 'sjlei24';

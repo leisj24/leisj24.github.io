@@ -37,8 +37,10 @@ const {
 		/>
 		<main>
 			<div class="page-with-sidebar">
+				<div class="page-content">
+					<slot />
+				</div>
 				<ProfileCard />
-				<slot />
 			</div>
 		</main>
 		<Footer />
@@ -49,7 +51,7 @@ const {
 			}
 			.page-with-sidebar {
 				display: grid;
-				grid-template-columns: 280px minmax(0, 1fr);
+				grid-template-columns: minmax(0, 1fr) 280px;
 				gap: 2rem;
 				align-items: start;
 			}
@@ -69,6 +71,7 @@ const {
 					gap: 1.75rem;
 				}
 				.page-with-sidebar > :global(aside) {
+					order: -1;
 					position: static;
 					max-width: 480px;
 					width: 100%;

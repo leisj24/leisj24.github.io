@@ -26,14 +26,19 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <script is:inline>
 	(() => {
-		try {
-			const saved = localStorage.getItem('theme');
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const theme = saved || (prefersDark ? 'dark' : 'light');
-			document.documentElement.dataset.theme = theme;
-		} catch (e) {
-			document.documentElement.dataset.theme = 'light';
-		}
+		const applyTheme = () => {
+			try {
+				const saved = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const theme = saved || (prefersDark ? 'dark' : 'light');
+				document.documentElement.dataset.theme = theme;
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		};
+		applyTheme();
+		// View Transitions 切页时会重写 <html> 属性，抹掉 data-theme，需要在换页后重新应用
+		document.addEventListener('astro:after-swap', applyTheme);
 	})();
 </script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
