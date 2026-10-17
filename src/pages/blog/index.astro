@@ -11,6 +11,23 @@ const posts = (await getCollection('blog'))
 		post,
 		stats: calcReadingStats(post.body ?? ''),
 	}));
+
+const categories = [
+	{ key: 'all', label: '全部' },
+	{ key: 'tech', label: '技术随笔' },
+	{ key: 'course', label: '课程论文' },
+	{ key: 'review', label: '复习资料' },
+];
+const counts = {
+	...Object.fromEntries(
+		categories.map((c) => [
+			c.key,
+			c.key === 'all'
+				? posts.length
+				: posts.filter((p) => p.post.data.category === c.key).length,
+		]),
+	),
+};
 ---
 
 <SidebarLayout
@@ -25,32 +42,127 @@ const posts = (await getCollection('blog'))
 			posts.length === 0 ? (
 				<p class="empty">还没有文章，敬请期待。</p>
 			) : (
-				<div class="posts-grid">
-					{posts.map(({ post, stats }) => (
-						<PostCard
-							href={`/blog/${post.id}/`}
-							title={post.data.title}
-							pubDate={post.data.pubDate}
-							description={post.data.description}
-							tags={post.data.tags}
-							words={stats.words}
-							minutes={stats.minutes}
-						/>
-					))}
-				</div>
+				<>
+					<div class="filters" role="group" aria-label="按分类筛选文章">
+						{categories.map((c, i) => (
+							<button
+								type="button"
+								class:list={['filter-chip', { 'is-active': i === 0 }]}
+								data-filter={c.key}
+								aria-pressed={i === 0 ? 'true' : 'false'}
+							>
+								{c.label}
+								<span class="count">{counts[c.key]}</span>
+							</button>
+						))}
+					</div>
+					<div class="posts-grid">
+						{posts.map(({ post, stats }) => (
+							<div class="post-item" data-category={post.data.category}>
+								<PostCard
+									href={`/blog/${post.id}/`}
+									title={post.data.title}
+									pubDate={post.data.pubDate}
+									description={post.data.description}
+									tags={post.data.tags}
+									words={stats.words}
+									minutes={stats.minutes}
+								/>
+							</div>
+						))}
+					</div>
+					<p class="empty-filter" hidden>该分类下还没有文章。</p>
+				</>
 			)
 		}
 	</article>
 	<style>
+		.filters {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1.25rem;
+		}
+		.filter-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			padding: 0.42rem 0.95rem;
+			border: 1px solid var(--color-border);
+			border-radius: var(--radius-pill);
+			background: var(--color-surface);
+			color: var(--color-text-muted);
+			font-size: 0.88rem;
+			font-weight: 500;
+			cursor: pointer;
+			transition:
+				color 180ms ease,
+				border-color 180ms ease,
+				background 180ms ease;
+		}
+		.filter-chip:hover {
+			color: var(--color-accent);
+			border-color: var(--color-accent);
+		}
+		.filter-chip.is-active {
+			background: var(--color-accent);
+			border-color: var(--color-accent);
+			color: #fff;
+		}
+		.filter-chip .count {
+			font-size: 0.72rem;
+			opacity: 0.75;
+		}
 		.posts-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 			gap: 1.25rem;
+		}
+		.post-item {
+			display: flex;
+		}
+		.post-item > :global(*) {
+			flex: 1;
+		}
+		.post-item[hidden] {
+			display: none;
 		}
 		.empty {
 			color: var(--color-text-muted);
 			text-align: center;
 			padding: 3rem 0;
 		}
+		.empty-filter {
+			color: var(--color-text-muted);
+			text-align: center;
+			padding: 2rem 0;
+		}
 	</style>
+	<script is:inline>
+		document.addEventListener('astro:page-load', () => {
+			const filters = document.querySelector('.filters');
+			if (!filters || filters.dataset.bound) return;
+			filters.dataset.bound = '1';
+			const chips = filters.querySelectorAll('[data-filter]');
+			const items = document.querySelectorAll('.post-item');
+			const empty = document.querySelector('.empty-filter');
+			const apply = (key) => {
+				chips.forEach((chip) => {
+					const active = chip.dataset.filter === key;
+					chip.classList.toggle('is-active', active);
+					chip.setAttribute('aria-pressed', active ? 'true' : 'false');
+				});
+				let shown = 0;
+				items.forEach((item) => {
+					const show = key === 'all' || item.dataset.category === key;
+					item.hidden = !show;
+					if (show) shown++;
+				});
+				if (empty) empty.hidden = shown !== 0;
+			};
+			chips.forEach((chip) =>
+				chip.addEventListener('click', () => apply(chip.dataset.filter)),
+			);
+		});
+	</script>
 </SidebarLayout>
